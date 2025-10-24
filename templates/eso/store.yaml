@@ -1,0 +1,17 @@
+# secret-store.yaml
+apiVersion: external-secrets.io/v1beta1
+kind: ClusterSecretStore
+metadata:
+  name: vault-backend
+spec:
+  provider:
+    vault:
+      server: {{ .Values.vault.serviceVault }}
+      path: {{ .Values.vault.path }}
+      version: "v2"
+      namespace: "vault-system"
+      auth:
+        tokenSecretRef:
+          name: vault-root-token
+          namespace: "vault-system"
+          key: "token"

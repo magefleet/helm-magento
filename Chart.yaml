@@ -1,0 +1,86 @@
+name: magento
+apiVersion: v2
+appVersion: 2.4.7-p6
+version: 3.0.0
+description: Production-ready Helm chart for Magento 2 with services including MariaDB, Elasticsearch/OpenSearch, Redis, RabbitMQ, Varnish, and optional SSL management
+type: application
+keywords:
+  - magento
+  - ecommerce
+  - magento2
+  - e-commerce
+  - commerce
+  - shopping-cart
+maintainers:
+  - name: Francesco Oghabi
+    email: info@oghabi.it
+    url: https://oghabi.it/
+home: https://github.com/magefleet/helm/magento-chart
+sources:
+  - https://github.com/magefleet/helm
+  - https://github.com/francesco-oghabi/magento2
+  - https://github.com/francesco-oghabi/php-nginx
+icon: https://raw.githubusercontent.com/magento/magento2/2.4-develop/lib/web/images/logo.svg
+annotations:
+  artifacthub.io/category: integration-delivery
+  artifacthub.io/license: MIT
+  artifacthub.io/links: |
+    - name: Documentation
+      url: https://github.com/magefleet/helm/blob/main/magento-chart/README.md
+    - name: Magento Official Site
+      url: https://magento.com
+  artifacthub.io/changes: |
+    - kind: added
+      description: Longhorn support for persistent storage
+    - kind: added
+      description: CertManager for managing Let's Encrypt certificates
+    - kind: fixed
+      description: Error 503 for ingress controller
+  artifacthub.io/screenshots: |
+    - title: Magento 2 Storefront
+      url: https://raw.githubusercontent.com/magento/magento2/2.4-develop/app/design/frontend/Magento/luma/web/images/logo.svg
+  artifacthub.io/operator: "false"
+  artifacthub.io/recommendations: |
+    - url: https://artifacthub.io/packages/helm/cert-manager/cert-manager
+    - url: https://artifacthub.io/packages/helm/longhorn/longhorn
+dependencies:
+  - name: elasticsearch
+    repository: https://helm.elastic.co
+    version: ~7.17.0
+    condition: elasticsearch.enabled
+  - name: opensearch
+    repository: https://opensearch-project.github.io/helm-charts/
+    version: ~1.23.0
+    condition: opensearch.enabled
+  - name: varnish
+    repository: https://charts.softonic.io
+    version: 0.18.6
+    condition: varnish.enabled
+  - name: imgproxy
+    version: ~0.9.0
+    repository: https://helm.imgproxy.net/
+    condition: imgproxy.enabled
+  - name: cert-manager
+    version: ~1.14.0
+    repository: https://charts.jetstack.io
+    condition: cert-manager.enabled
+  - name: external-secrets
+    version: ~0.15.0
+    repository: https://charts.external-secrets.io
+    condition: external-secrets.enabled
+  - name: longhorn
+    version: ~1.10.0
+    repository: https://charts.longhorn.io
+    condition: longhorn.enabled
+  - name: mariadb
+    version: 0.1.1
+    repository: https://magefleet.github.io/helm-chart-mariadb/
+    condition: mariadb.enabled
+  - name: rabbitmq
+    version: 1.2.0
+    repository: https://magefleet.github.io/helm-chart-rabbitmq/
+    condition: rabbitmq.enabled
+  - name: redis
+    version: 0.1.0
+    repository: https://magefleet.github.io/helm-chart-redis/
+    condition: redis.enabled

@@ -1,0 +1,30 @@
+{{- if and .Values.persistence.enabled (not .Values.persistence.existingClaim) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.persistence.name }}
+  annotations: {{ toYaml .Values.persistence.annotations | nindent 4 }}
+  labels:
+    {{- include "magento.labels" . | nindent 4 }}
+    {{- range $key, $val := ($.Values.persistence.labels | default dict) }}
+    {{ $key }}: {{ $val | quote }}
+    {{- end }}
+spec:
+  accessModes:
+    {{- if not (empty .Values.persistence.accessModes) }}
+    {{- range .Values.persistence.accessModes }}
+    - {{ . | quote }}
+      {{- end }}
+    {{- else }}
+    - {{ .Values.persistence.accessMode | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ required "Storage size is required." .Values.persistence.size | quote }}
+  {{- if .Values.persistence.storageClassName }}
+  storageClassName: {{ .Values.persistence.storageClassName }}
+  {{- end -}}
+  {{- if .Values.persistence.dataSource }}
+  dataSource: {{ toYaml  .Values.persistence.dataSource | nindent 4 }}
+  {{- end }}
+{{- end -}}

@@ -1,0 +1,1044 @@
+## Global Helm parameters
+global:
+  imageRegistry: ""
+  domain: magefleet.com
+  email: "francesco@oghabi.it"
+  ## E.g.
+  ## imagePullSecrets:
+  ##   - myRegistryKeySecretName
+  ##
+  imagePullSecrets: [ ]
+
+
+image:
+  # registry:
+  repository: ramingo92/magento
+  tag: "2.4.7-p6"
+  pullPolicy: Always
+
+
+magento:
+  enabled: true
+  nameOverride: magento
+  fullnameOverride: magento
+  replicas: 1
+  env:
+    - name: MAGENTO_CLOUD_ROUTES
+      valueFrom:
+        secretKeyRef:
+          name: magento-cloud-variables
+          key: MAGENTO_CLOUD_ROUTES
+    - name: MAGENTO_CLOUD_RELATIONSHIPS
+      valueFrom:
+        secretKeyRef:
+          name: magento-cloud-variables
+          key: MAGENTO_CLOUD_RELATIONSHIPS
+    - name: MAGENTO_CLOUD_VARIABLES
+      valueFrom:
+        secretKeyRef:
+          name: magento-cloud-variables
+          key: MAGENTO_CLOUD_VARIABLES
+    - name: RELAYHOST
+      valueFrom:
+        secretKeyRef:
+          name: magento-cloud-variables
+          key: RELAYHOST
+          optional: true
+    - name: SMTP_USE_TLS
+      valueFrom:
+        secretKeyRef:
+          name: magento-cloud-variables
+          key: SMTP_USE_TLS
+          optional: true
+
+  annotations: { }
+  labels: { }
+  podAnnotations: { }
+  resources:
+    requests:
+      cpu: 300m
+      memory: 1Gi
+    limits:
+      cpu: 1500m
+      memory: 2Gi
+  lifecycle: { }
+  affinity: { }
+  strategy:
+    rollingUpdate:
+      maxSurge: 100%
+      maxUnavailable: 0
+    type: RollingUpdate
+
+  podDisruptionBudget:
+    enabled: false
+    minAvailable: 0
+    maxUnavailable: 1
+
+  # HPA configuration, see https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#configurable-scaling-behavior
+  horizontalPodAutoscaler:
+    enabled: false
+    minCount: 1
+    maxCount: 3
+
+    scaleUp:
+      policies:
+        - type: Pods
+          value: 1
+          periodSeconds: 60
+      stabilizationWindowSeconds: 300
+
+    scaleDown:
+      policies:
+        - type: Pods
+          value: 1
+          periodSeconds: 60
+      stabilizationWindowSeconds: 300
+
+    metrics:
+      - type: Resource
+        resource:
+          name: cpu
+          target:
+            type: Utilization
+            averageUtilization: 80
+
+  podSecurityContext: { }
+  securityContext: { }
+  tolerations: [ ]
+  sidecars: [ ]
+  volumes:
+    - name: magento-data
+      persistentVolumeClaim:
+        claimName: magento-data
+
+  startupProbe:
+    exec:
+      command:
+        - cat
+        - /tmp/deployed
+    initialDelaySeconds: 20
+    periodSeconds: 10
+    timeoutSeconds: 3
+    failureThreshold: 20
+
+  #  readinessProbe:
+  #    exec:
+  #      command:
+  #        - cat
+  #        - /tmp/deployed
+  #    initialDelaySeconds: 20
+  #    periodSeconds: 10
+  #    timeoutSeconds: 3
+  #    failureThreshold: 20
+
+  #  livenessProbe:
+  #    exec:
+  #      command:
+  #        - cat
+  #        - /tmp/deployed
+  #    initialDelaySeconds: 20
+  #    periodSeconds: 10
+  #    timeoutSeconds: 3
+  #    failureThreshold: 20
+
+  #  extraVolumes:
+  #    - name: extra-folder
+  #      hostPath:
+  #        path: /extra
+
+  volumeMounts:
+    - name: magento-data
+      mountPath: /var/www/html/pub/media
+      subPath: media
+    - name: magento-data
+      mountPath: /var/www/html/var
+      subPath: var
+    - name: magento-data
+      mountPath: /var/www/html/pub/static/_cache
+      subPath: static-cache
+
+
+  extraInitContainer:
+    - name: check-redis
+      image: busybox
+      imagePullPolicy: IfNotPresent
+      command: [ 'sh', '-c', 'while ! nc -z -v -w5 redis 6379 2>&1| grep -q open; do echo \"waiting for redis\"; sleep 1s; done' ]
+    - name: check-rabbitmq
+      image: busybox
+      imagePullPolicy: IfNotPresent
+      command: [ 'sh', '-c', 'while ! nc -z -v -w5 magento-rabbitmq 5672 2>&1| grep -q open; do echo \"waiting for rabbitmq\"; sleep 1s; done' ]
+    - name: check-mysql
+      image: busybox
+      imagePullPolicy: IfNotPresent
+      command: [ 'sh', '-c', 'while ! nc -z -v -w5 magento-mariadb 3306 2>&1| grep -q open; do echo \"waiting for magento-mariadb\"; sleep 1s; done' ]
+    - name: check-elasticsearch
+      image: busybox
+      imagePullPolicy: IfNotPresent
+      command: [ 'sh', '-c', 'while ! nc -z -v -w5 elasticsearch 9200 2>&1| grep -q open; do echo \"waiting for elasticsearch\"; sleep 1s; done' ]
+    - name: check-magento-install
+      image: busybox
+      imagePullPolicy: IfNotPresent
+      command: [ 'sh', '-c', 'while [ ! -f /tmp/shared/var/.magento-installed ]; do echo \"waiting for Magento installation process to finish\"; sleep 1s; done' ]
+      volumeMounts:
+        - name: magento-data
+          mountPath: /tmp/shared
+
+#  terminationGracePeriodSeconds: 30
+
+
+
+
+########## CRONJOB ##########
+cronjob:
+  enabled: true
+  name: cronjob
+  replicas: 1
+  env:
+    - name: MAGENTO_CLOUD_ROUTES
+      valueFrom:
+        secretKeyRef:
+          name: magento-cloud-variables
+          key: MAGENTO_CLOUD_ROUTES
+    - name: MAGENTO_CLOUD_RELATIONSHIPS
+      valueFrom:
+        secretKeyRef:
+          name: magento-cloud-variables
+          key: MAGENTO_CLOUD_RELATIONSHIPS
+    - name: MAGENTO_CLOUD_VARIABLES
+      valueFrom:
+        secretKeyRef:
+          name: magento-cloud-variables
+          key: MAGENTO_CLOUD_VARIABLES
+    - name: RELAYHOST
+      valueFrom:
+        secretKeyRef:
+          name: magento-cloud-variables
+          key: RELAYHOST
+          optional: true
+    - name: SMTP_USE_TLS
+      valueFrom:
+        secretKeyRef:
+          name: magento-cloud-variables
+          key: SMTP_USE_TLS
+          optional: true
+    - name: ADD_SAMPLE_DATA
+      valueFrom:
+        secretKeyRef:
+          name: magento-cloud-variables
+          key: ADD_SAMPLE_DATA
+          optional: true
+    - name: COMPOSER_AUTH
+      valueFrom:
+        secretKeyRef:
+          name: magento-cloud-variables
+          key: COMPOSER_AUTH
+          optional: true
+
+  annotations: { }
+  labels: { }
+  podAnnotations: { }
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  sidecars: [ ]
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+
+  startupProbe:
+    exec:
+      command:
+        - cat
+        - /tmp/deployed
+    initialDelaySeconds: 20
+    periodSeconds: 10
+    timeoutSeconds: 3
+    failureThreshold: 20
+
+  podSecurityContext: { }
+  securityContext: { }
+  affinity: { }
+  tolerations: [ ]
+  volumes:
+    - name: magento-data
+      persistentVolumeClaim:
+        claimName: magento-data
+
+  volumeMounts:
+    - name: magento-data
+      mountPath: /var/www/html/pub/media
+      subPath: media
+    - name: magento-data
+      mountPath: /var/www/html/var
+      subPath: var
+  #    - name: magento-data
+  #      mountPath: /var/www/html/pub/static/_cache
+  #      subPath: static-cache
+
+  command: "'sh', '-c', 'cd /var/tmp && exec /usr/bin/supervisord --nodaemon --configuration /etc/supervisord/supervisord-cronjob.conf'"
+
+  extraInitContainer:
+    - name: check-redis
+      image: busybox
+      imagePullPolicy: IfNotPresent
+      command: [ 'sh', '-c', 'while ! nc -z -v -w5 redis 6379 2>&1| grep -q open; do echo \"waiting for redis\"; sleep 1s; done' ]
+    - name: check-rabbitmq
+      image: busybox
+      imagePullPolicy: IfNotPresent
+      command: [ 'sh', '-c', 'while ! nc -z -v -w5 magento-rabbitmq 5672 2>&1| grep -q open; do echo \"waiting for rabbitmq\"; sleep 1s; done' ]
+    - name: check-mysql
+      image: busybox
+      imagePullPolicy: IfNotPresent
+      command: [ 'sh', '-c', 'while ! nc -z -v -w5 magento-mariadb 3306 2>&1| grep -q open; do echo \"waiting for magento-mariadb\"; sleep 1s; done' ]
+    - name: check-elasticsearch
+      image: busybox
+      imagePullPolicy: IfNotPresent
+      command: [ 'sh', '-c', 'while ! nc -z -v -w5 elasticsearch 9200 2>&1| grep -q open; do echo \"waiting for elasticsearch\"; sleep 1s; done' ]
+    - name: volume-mount-hack
+      image: busybox
+      command: [ "sh", "-c", "chmod -R a+rwx /var/www/html" ]
+      volumeMounts:
+        - name: magento-data
+          mountPath: /var/www/html
+
+  terminationGracePeriodSeconds: 600
+  lifecycle:
+    preStop:
+      exec:
+        command: [ "sh", "-c", "rm -rf /etc/crontabs/nginx; while [ $(ps aux | grep php| wc -l) -gt 2 ]; do echo 'php scripts running'; sleep 1s; done" ]
+
+
+
+
+redis:
+  enabled: true
+  nameOverride: redis
+  fullnameOverride: redis
+  auth:
+    enabled: false
+  cluster:
+    enabled: false
+  usePassword: false
+  architecture: standalone
+  master:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 300m
+        memory: 512Mi
+    disableCommands: [ ]
+
+
+rabbitmq:
+  enabled: true
+  auth:
+    username: phoenix
+    existingSecret: "magento-cloud-variables"
+    existingSecretPasswordKey: "rabbitmq-password"
+    existingSecretErlangCookieKey: "rabbitmq-erlang-cookie"
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+
+
+mariadb:
+  enabled: true
+  mariadb:
+    database: "magento"
+    user: "magento"
+    password: "magento"
+    rootPassword: "magento"
+  resources:
+    requests:
+      cpu: 300m
+      memory: 512Mi
+    limits:
+      cpu: 800m
+      memory: 1Gi
+
+
+elasticsearch:
+  enabled: false
+  image: phoenixmedia/magento-cloud-docker-elasticsearch
+  imageTag: 7.17-1.3.5
+  replicas: 1
+  minimumMasterNodes: 1
+  esJavaOpts: "-Xmx256M -Xms256M"
+  extraEnvs:
+    - name: cluster.initial_master_nodes
+      value: null
+  persistence:
+    enabled: false
+  volumeClaimTemplate.resources.requests.storage: 10Gi
+  resources:
+    limits:
+      cpu: "4000m"
+      memory: "4Gi"
+
+
+opensearch:
+  enabled: true
+  image:
+    repository: magento/magento-cloud-docker-opensearch
+    tag: 2.5-1.4.0
+  replicas: 1
+  masterService: "elasticsearch"
+  opensearchJavaOpts: "-Xmx256M -Xms256M"
+  sysctlInit:
+    enabled: true
+  config:
+    opensearch.yml: |
+      cluster.name: opensearch-cluster
+      network.host: 0.0.0.0
+      plugins.security.disabled: true
+  extraEnvs:
+    - name: DISABLE_SECURITY_PLUGIN
+      value: "true"
+    - name: DISABLE_INSTALL_DEMO_CONFIG
+      value: "true"
+    - name: bootstrap.memory_lock
+      value: 'false'
+
+  persistence:
+    enabled: true
+    size: 10Gi
+
+  resources:
+    requests:
+      cpu: 300m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+
+
+varnish:
+  enabled: true
+  nameOverride: "varnish"
+  fullnameOverride: "varnish"
+  image:
+    repository: varnish
+    tag: "7.3-alpine"
+    pullPolicy: Always
+  securityContext:
+    runAsUser: 0
+  service:
+    type: NodePort
+    port: 8080
+  rolloutDeployment: false
+  varnishSize: 128M
+  arguments:
+    - -s
+    - images=file,/disk-cache/varnish-image-cache,128m
+    - -p
+    - http_resp_hdr_len=65536
+    - -p
+    - http_resp_size=98304
+    - -p
+    - workspace_backend=131072
+
+  extraVolumes:
+    - name: disk-cache
+      emptyDir: { }
+
+  extraVolumeMounts:
+    - name: disk-cache
+      mountPath: /disk-cache
+
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+  vcl:
+    default.vcl: |-
+      vcl 4.0;
+
+      import std;
+      import dynamic;
+      # The minimal Varnish version is 6.0
+      # For SSL offloading, pass the following header in your proxy server or load balancer: 'X-Forwarded-Proto: https'
+
+      probe magento_probe {
+          .url = "/health_check.php";
+          .timeout = 5s;
+          .interval = 5s;
+          .window = 5;
+          .initial = 3;
+          .threshold = 3;
+      }
+
+      probe imgproxy_probe {
+          .url = "/health";
+          .timeout = 5s;
+          .interval = 5s;
+          .initial = 3;
+          .window = 5;
+          .threshold = 3;
+      }
+
+      backend default {
+          .host = "localhost";
+          .port = "80";
+          .probe = magento_probe;
+      }
+
+      acl purge {
+          "localhost";
+          "127.0.0.1";
+          "172.16.0.0/12";
+          "10.0.0.0/8";
+          "magento";
+      }
+
+      #acl xdebug-users {
+      #    "192.168.0.0/24";
+      #}
+
+      sub vcl_init {
+          new magento_director = dynamic.director(
+              port = "80",
+              share = HOST,
+              probe = magento_probe,
+              first_byte_timeout = 18000s,
+              between_bytes_timeout = 90s,
+              ttl = 10s
+          );
+
+          new imgproxy_directory = dynamic.director(
+              port = "80",
+              share = HOST,
+              probe = imgproxy_probe,
+              first_byte_timeout = 5s,
+              between_bytes_timeout = 5s,
+              ttl = 10s
+          );
+      }
+
+      sub vcl_recv {
+          if (req.restarts > 0) {
+              set req.hash_always_miss = true;
+          }
+
+          if (req.method == "PURGE") {
+              if (client.ip !~ purge) {
+                  return (synth(405, "Method not allowed"));
+              }
+              # To use the X-Pool header for purging varnish during automated deployments, make sure the X-Pool header
+              # has been added to the response in your backend server config. This is used, for example, by the
+              # capistrano-magento2 gem for purging old content from varnish during it's deploy routine.
+              if (!req.http.X-Magento-Tags-Pattern && !req.http.X-Pool) {
+                  return (synth(400, "X-Magento-Tags-Pattern or X-Pool header required"));
+              }
+              if (req.http.X-Magento-Tags-Pattern) {
+                ban("obj.http.X-Magento-Tags ~ " + req.http.X-Magento-Tags-Pattern);
+              }
+              if (req.http.X-Pool) {
+                ban("obj.http.X-Pool ~ " + req.http.X-Pool);
+              }
+              return (synth(200, "Purged"));
+          }
+
+          set req.backend_hint = magento_director.backend("magento-headless");
+
+          if (req.method != "GET" &&
+              req.method != "HEAD" &&
+              req.method != "PUT" &&
+              req.method != "POST" &&
+              req.method != "TRACE" &&
+              req.method != "OPTIONS" &&
+              req.method != "DELETE") {
+                /* Non-RFC2616 or CONNECT which is weird. */
+                return (pipe);
+          }
+
+          # health check
+          if (req.url ~ "^/varnish-health-check.html") {
+              return (synth(200, "Node alive"));
+          }
+
+          # use xdebug backend
+      #    if (req.http.cookie ~ "XDEBUG_(SESSION|PROFILE)=" && std.ip(req.http.X-Real-IP, "0.0.0.0") ~ xdebug-users) {
+      #        set req.backend_hint = magento_director.backend("xdebug");
+      #        return (pass);
+      #    }
+
+          # We only deal with GET and HEAD by default
+          if (req.method != "GET" && req.method != "HEAD") {
+              return (pass);
+          }
+
+          # Bypass customer, shopping cart, checkout
+          if (req.url ~ "/customer" || req.url ~ "/checkout") {
+              return (pass);
+          }
+
+          # Bypass health check requests
+          if (req.url ~ "^/(pub/)?(health_check.php)$") {
+              return (pass);
+          }
+
+          # Set initial grace period usage status
+          set req.http.grace = "none";
+
+          # normalize url in case of leading HTTP scheme and domain
+          set req.url = regsub(req.url, "^http[s]?://", "");
+
+          # collect all cookies
+          std.collect(req.http.Cookie);
+
+          # Compression filter. See https://www.varnish-cache.org/trac/wiki/FAQ/Compression
+          if (req.http.Accept-Encoding) {
+              if (req.url ~ "\.(jpg|jpeg|png|gif|gz|tgz|bz2|tbz|mp3|ogg|swf|flv)$") {
+                  # No point in compressing these
+                  unset req.http.Accept-Encoding;
+              } elsif (req.http.Accept-Encoding ~ "gzip") {
+                  set req.http.Accept-Encoding = "gzip";
+              } elsif (req.http.Accept-Encoding ~ "deflate" && req.http.user-agent !~ "MSIE") {
+                  set req.http.Accept-Encoding = "deflate";
+              } else {
+                  # unknown algorithm
+                  unset req.http.Accept-Encoding;
+              }
+          }
+
+          # Remove all marketing get parameters to minimize the cache objects
+          if (req.url ~ "(\?|&)(gclid|cx|ie|cof|siteurl|zanpid|origin|fbclid|mc_[a-z]+|utm_[a-z]+|_bta_[a-z]+)=") {
+              set req.url = regsuball(req.url, "(gclid|cx|ie|cof|siteurl|zanpid|origin|fbclid|mc_[a-z]+|utm_[a-z]+|_bta_[a-z]+)=[-_A-z0-9+()%.]+&?", "");
+              set req.url = regsub(req.url, "[?|&]+$", "");
+          }
+
+          # Static files caching
+          if (req.url ~ "^/(pub/)?(media|static|insecure)/") {
+              # image processing
+              if (req.url ~ "(?i)^/(pub/)?media/.*\.(jpe?g|png|gif|webp)(\?.*)?$" && req.restarts == 0 && std.healthy(imgproxy_directory.backend("imgproxy"))) {
+                  set req.backend_hint = imgproxy_directory.backend("imgproxy");
+                  set req.http.x-img-processing = "1";
+
+                  set req.http.X-img-width = regsub(req.url, ".*width=([0-9]+)(.*)?", "\1");
+                  if (req.http.X-img-width !~ "^[0-9]{2,4}$") { set req.http.X-img-width = "2000"; }
+                  set req.http.X-img-height = regsub(req.url, ".*height=([0-9]+)(.*)?", "\1");
+                  if (req.http.X-img-height !~ "^[0-9]{2,4}$") { set req.http.X-img-height = "2000"; }
+                  set req.http.X-img-path =  regsub(req.url, "^(/media/[^?]+)(.*)?", "local://\1");
+                  std.log("img-width: " + req.http.X-img-width);
+                  std.log("img-height: " + req.http.X-img-height);
+                  std.log("img-path: " + req.http.X-img-path);
+
+                  set req.url = "/insecure/rs:fit:" + req.http.X-img-width + ":" + req.http.X-img-height + "/plain/" + req.http.X-img-path;
+              }
+              else if (req.http.x-img-processing == "1") {
+                  # request might get restarted (see vcl_hit). make sure backend_hint is set.
+                  set req.backend_hint = imgproxy_directory.backend("imgproxy");
+              }
+              # Unless static content signing is deactivated it should be save to cache all static files
+              # else {
+              #  # Static files should not be cached by default
+              #  return (pass);
+              #}
+
+              # But if you use a few locales and don't use CDN you can enable caching static files by commenting previous line (#return (pass);) and uncommenting next 3 lines
+              unset req.http.Https;
+              unset req.http.X-Forwarded-Proto;
+              unset req.http.Cookie;
+          }
+
+          # Bypass authenticated GraphQL requests without a X-Magento-Cache-Id
+          if (req.url ~ "/graphql" && !req.http.X-Magento-Cache-Id && req.http.Authorization ~ "^Bearer") {
+              return (pass);
+          }
+
+          return (hash);
+      }
+
+      sub vcl_hash {
+          if (req.http.x-img-processing) {
+            if (req.http.accept ~ "image/webp") {
+              hash_data("webp=1");
+            }
+            else if (req.http.accept ~ "image/png") {
+              hash_data("png=1");
+            }
+          } else {
+            if (req.http.cookie ~ "X-Magento-Vary=") {
+                hash_data(regsub(req.http.cookie, "^.*?X-Magento-Vary=([^;]+);*.*$", "\1"));
+            }
+          }
+
+          # For multi site configurations to not cache each other's content
+          if (req.http.host) {
+              hash_data(req.http.host);
+          } else {
+              hash_data(server.ip);
+          }
+
+          if ((req.url !~ "/graphql" || !req.http.X-Magento-Cache-Id) && req.http.cookie ~ "X-Magento-Vary=") {
+              hash_data(regsub(req.http.cookie, "^.*?X-Magento-Vary=([^;]+);*.*$", "\1"));
+          }
+
+          # To make sure http users don't see ssl warning
+          if (req.http.X-Forwarded-Proto) {
+              hash_data(req.http.X-Forwarded-Proto);
+          }
+
+          if (req.url ~ "/graphql") {
+              call process_graphql_headers;
+          }
+      }
+
+      sub process_graphql_headers {
+          if (req.http.X-Magento-Cache-Id) {
+              hash_data(req.http.X-Magento-Cache-Id);
+
+              # When the frontend stops sending the auth token, make sure users stop getting results cached for logged-in users
+              if (req.http.Authorization ~ "^Bearer") {
+                  hash_data("Authorized");
+              }
+          }
+
+          if (req.http.Store) {
+              hash_data(req.http.Store);
+          }
+
+          if (req.http.Content-Currency) {
+              hash_data(req.http.Content-Currency);
+          }
+      }
+
+      sub vcl_backend_response {
+
+          set beresp.grace = 3d;
+
+          if (beresp.http.content-type ~ "text") {
+              set beresp.do_esi = true;
+          }
+
+          if (bereq.url ~ "\.js$" || beresp.http.content-type ~ "text") {
+              set beresp.do_gzip = true;
+          }
+
+          if (beresp.http.X-Magento-Debug) {
+              set beresp.http.X-Magento-Cache-Control = beresp.http.Cache-Control;
+          }
+
+          # cache only successfully responses and 404s that are not marked as private
+          if (beresp.status != 200 &&
+                  beresp.status != 404 &&
+                  beresp.http.Cache-Control ~ "private") {
+              set beresp.uncacheable = true;
+              set beresp.ttl = 86400s;
+              return (deliver);
+          }
+
+          # validate if we need to cache it and prevent from setting cookie
+          if (beresp.ttl > 0s && (bereq.method == "GET" || bereq.method == "HEAD")) {
+              unset beresp.http.set-cookie;
+          }
+
+          # image processing
+          if (bereq.http.x-img-processing == "1") {
+              set beresp.storage = storage.images;
+              if (beresp.status != 200 && beresp.status != 304) {
+                  std.log("imgproxy - an error occurred, start over with fallback");
+                  return (abandon);
+              }
+          } else if (bereq.http.x-img-processing == "2") {
+              # imgproxy returned an error, return a cacheable 404
+              set beresp.status = 404;
+              set beresp.http.Cache-Control = "max-age=600";
+              set beresp.ttl = 600s;
+          }
+
+          # If page is not cacheable then bypass varnish for 2 minutes as Hit-For-Pass
+          if (beresp.ttl <= 0s ||
+              beresp.http.Surrogate-control ~ "no-store" ||
+              (!beresp.http.Surrogate-Control &&
+              beresp.http.Cache-Control ~ "no-cache|no-store") ||
+              beresp.http.Vary == "*") {
+              # Mark as Hit-For-Pass for the next 2 minutes
+              set beresp.ttl = 120s;
+              set beresp.uncacheable = true;
+          }
+
+          # If the cache key in the Magento response doesn't match the one that was sent in the request, don't cache under the request's key
+          if (bereq.url ~ "/graphql" && bereq.http.X-Magento-Cache-Id && bereq.http.X-Magento-Cache-Id != beresp.http.X-Magento-Cache-Id) {
+              set beresp.ttl = 0s;
+              set beresp.uncacheable = true;
+          }
+
+          return (deliver);
+      }
+
+      sub vcl_deliver {
+          if (resp.http.x-varnish ~ " ") {
+              set resp.http.X-Magento-Cache-Debug = "HIT";
+              set resp.http.Grace = req.http.grace;
+          } else {
+              set resp.http.X-Magento-Cache-Debug = "MISS";
+          }
+
+          # Not letting browser to cache non-static files.
+          if (resp.http.Cache-Control !~ "private" && req.url !~ "^/(pub/)?(media|static|insecure)/") {
+              set resp.http.Pragma = "no-cache";
+              set resp.http.Expires = "-1";
+              set resp.http.Cache-Control = "no-store, no-cache, must-revalidate, max-age=0";
+          }
+
+          if (!resp.http.X-Magento-Debug) {
+              unset resp.http.Age;
+          }
+          unset resp.http.X-Magento-Debug;
+          unset resp.http.X-Magento-Tags;
+          unset resp.http.X-Powered-By;
+          unset resp.http.Server;
+          unset resp.http.X-Varnish;
+          unset resp.http.Via;
+          unset resp.http.Link;
+      }
+
+      sub vcl_hit {
+          if (obj.ttl >= 0s) {
+              # Hit within TTL period
+              return (deliver);
+          }
+          if (std.healthy(req.backend_hint)) {
+              if (obj.ttl + 300s > 0s) {
+                  # Hit after TTL expiration, but within grace period
+                  set req.http.grace = "normal (healthy server)";
+                  return (deliver);
+              } else {
+                  # Hit after TTL and grace expiration
+                  return (restart);
+              }
+          } else {
+              # server is not healthy, retrieve from cache
+              set req.http.grace = "unlimited (unhealthy server)";
+              return (deliver);
+          }
+      }
+
+      sub vcl_synth {
+          if (req.http.x-img-processing == "1") {
+              std.rollback(req);
+              set req.http.x-img-processing = "2";
+              return (restart);
+          }
+      }
+
+
+
+
+imgproxy:
+  enabled: false
+  fullnameOverride: imgproxy
+  persistence:
+    enabled: true
+    existingClaim: magento-data
+    mountPath: /images/media
+    subPath: media
+  features:
+    compression:
+      jpegProgressive: true
+    urlSignature:
+      enabled: false
+    server:
+      useEtag: true
+      # TTL of 1 week
+      ttl: 604800
+    security:
+      allowedSources: "local://"
+    formatsSupportDetection:
+      webp:
+        enabled: true
+        enforced: true
+    custom:
+      IMGPROXY_LOCAL_FILESYSTEM_ROOT: "/images"
+    fallbackImage:
+      httpCode: 404
+
+
+persistence:
+  enabled: true
+  name: magento-data
+  annotations:
+    longhorn.io/number-of-replicas: "1"
+  labels: { }
+  # existingClaim:
+  accessMode: ReadWriteMany
+  size: 10Gi
+  storageClassName: "longhorn"
+  #storageClassName: "files"
+
+## Kubernetes configuration
+## For minikube, set this to NodePort, elsewhere use LoadBalancer
+##
+service:
+  type: ClusterIP
+  port: 80
+  annotations: { }
+  labels: { }
+  sessionAffinity: "None"
+  clusterIP: ""
+  loadBalancerSourceRanges: [ ]
+  loadBalancerIP: ""
+  nodePorts:
+    http: ""
+  externalTrafficPolicy: Cluster
+
+## Magento Headless Service
+serviceHeadless:
+  enabled: true
+  port: 80
+  annotations: { }
+  labels: { }
+
+## Configure the ingress resource that allows you to access the
+## Magento installation. Set up the URL
+## ref: http://kubernetes.io/docs/user-guide/ingress/
+##
+ingress:
+  ## Set to true to enable ingress record generation
+  enabled: true
+  ingressClassName: nginx
+  certManager: true
+  useProxyProtocol: true
+  annotations:
+    letsencrypt: true
+    proxyBufferSize: '32k'
+    proxyBuffering: 'on'
+    proxyBuffersNumber: '16'
+    proxyConnectTimeout: '600'
+    proxyReadTimeout: '600'
+    proxySendTimeout: '600'
+    sslRedirect: "true"
+    proxyBodySize: 32m
+    extraRaw: |-
+    nginx.ingress.kubernetes.io/proxy-buffer-size: '32k'
+    nginx.ingress.kubernetes.io/proxy-buffering: 'on'
+    nginx.ingress.kubernetes.io/proxy-buffers-number: '16'
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: '600'
+    nginx.ingress.kubernetes.io/proxy-read-timeout: '600'
+    nginx.ingress.kubernetes.io/proxy-send-timeout: '600'
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: 32m
+    tls: true
+    tlsSecret: magento-tls
+  tls:
+    - hosts:
+        - magefleet.com
+      secretName: magento-tls
+  hosts:
+    - name: magefleet.com
+      paths:
+        - path: "/"
+          serviceName: varnish
+          servicePort: 8080
+
+    #    extraRaw: |-
+    #      nginx.ingress.kubernetes.io/whitelist-source-range: |-
+    #        10.0.0.0/24
+    #        172.10.0.1
+    #      nginx.ingress.kubernetes.io/auth-type: basic
+    #      nginx.ingress.kubernetes.io/auth-secret: general-secrets
+    #      nginx.ingress.kubernetes.io/auth-realm: "Authentication Required"
+    #      nginx.ingress.kubernetes.io/configuration-snippet: |-
+    #        satisfy any;
+    #        allow 8.8.8.8;
+    #        deny all;
+
+    ## The list of hostnames to be covered with this ingress record.
+    ## Most likely this will be just one host, but in the event more hosts are needed, this is an array
+    #  hosts:
+    #  - name: magento.local
+    #    paths:
+    #    - path: "/"
+    #      serviceName: varnish
+    #      servicePort: 80
+    ## Set this to true in order to enable TLS on the ingress record
+    #    tls: true
+
+    ## Optionally specify the TLS hosts for the ingress record
+    ## Useful when the Ingress controller supports www-redirection
+  ## If not specified, the above host name will be used
+#    tlsHosts:
+#    - magento.local
+
+#    tlsSecret: site-cert
+
+
+
+secrets:
+  enabled: true
+  name: general-secrets
+  annotations: { }
+  labels: { }
+  credentials:
+    data:
+      VAULT_TOKEN: "placeholderrootkey"
+  externalSecrets:
+    enabled: false
+
+
+
+
+
+# extra K8s manifests to deploy
+extraObjects:
+#  - apiVersion: longhorn.io/v1beta2
+#    kind: Setting
+#    metadata:
+#      name: deleting-confirmation-flag
+#    value: "true"
+
+# Cert Manager
+#cert-manager:
+#  enabled: true
+#  installCRDs: true
+#  namespace: magento
+#
+#
+issuer:
+  secret:
+    secretName: magento-tls
+  enabled: true
+  email: francesco@oghabi.it
+  privateKeySecretRef: magento-tls
+
+
+vault:
+  serviceVault: "http://vault.internal:30200"
+  path: "magefleet/data"
+  token: ""  # Set this in production values or via --set
+
+# Cert Manager
+cert-manager:
+  enabled: true
+  installCRDs: false  # CRDs are in crds/ directory
+  namespace: cert-manager
+
+# External Secrets Operator
+external-secrets:
+  enabled: true
+  installCRDs: false  # CRDs are in crds/ directory
+
+# Longhorn Storage
+longhorn:
+  namespaceOverride: "longhorn-system"
+  enabled: true
+  installCRDs: true  # CRDs are in crds/ directory
+  preUpgradeChecker:
+    jobEnabled: false

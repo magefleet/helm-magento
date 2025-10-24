@@ -1,0 +1,68 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "magento.fullname" . }}
+  labels:
+    {{- include "magento.labels" . | nindent 4 }}
+    {{- range $key, $val := ($.Values.ingress.labels | default dict) }}
+    {{ $key }}: {{ $val | quote }}
+    {{- end }}
+  {{- if or .Values.ingress.annotations .Values.ingress.certManager .Values.ingress.useProxyProtocol }}
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    ## TODO IF CERT MANAGER IS ENABLED
+    cert-manager.io/cluster-issuer: magento-tls
+    {{- if .Values.ingress.useProxyProtocol }}
+    use-proxy-protocol: "true"
+    {{- end }}
+    nginx.ingress.kubernetes.io/proxy-buffer-size: {{ .Values.ingress.annotations.proxyBufferSize | quote }}
+    nginx.ingress.kubernetes.io/proxy-buffering: {{ .Values.ingress.annotations.proxyBuffering | quote }}
+    nginx.ingress.kubernetes.io/proxy-buffers-number: {{ .Values.ingress.annotations.proxyBuffersNumber | quote }}
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: {{ .Values.ingress.annotations.proxyConnectTimeout | quote }}
+    nginx.ingress.kubernetes.io/proxy-read-timeout: {{ .Values.ingress.annotations.proxyReadTimeout | quote }}
+    nginx.ingress.kubernetes.io/proxy-send-timeout: {{ .Values.ingress.annotations.proxySendTimeout | quote }}
+    nginx.ingress.kubernetes.io/ssl-redirect: {{ .Values.ingress.annotations.sslRedirect | quote }}
+    nginx.ingress.kubernetes.io/proxy-body-size: {{ .Values.ingress.annotations.proxyBodySize | quote }}
+    {{- if .Values.ingress.annotations.extraRaw }}
+    {{ .Values.ingress.annotations.extraRaw | nindent 4 }}
+    {{- end }}
+  {{- end }}
+spec:
+  {{- if .Values.ingress.ingressClassName }}
+  ingressClassName: {{ .Values.ingress.ingressClassName }}
+  {{- end }}
+  tls:
+    - hosts:
+        - {{ .Values.global.domain }}
+      secretName: magento-tls
+  rules:
+  {{- range .Values.ingress.hosts }}
+    - host: {{ .name | quote }}
+      http:
+        paths:
+        {{- range .paths }}
+          - path: {{ .path | default "/" | quote }}
+            pathType: {{ .pathType | default "Prefix" | quote }}
+            backend:
+              service:
+                name: {{ .serviceName }}
+                port:
+                  number: {{ .servicePort | default "80" }}
+        {{- end }}
+  {{- end }}
+#  tls:
+#  {{- range .Values.ingress.hosts }}
+#  {{- if .tls }}
+#  - hosts:
+#  {{- if .tlsHosts }}
+#  {{- range $host := .tlsHosts }}
+#    - {{ $host }}
+#  {{- end }}
+#  {{- else }}
+#    - {{ .name }}
+#  {{- end }}
+#    secretName: {{ .tlsSecret }}
+#  {{- end }}
+#  {{- end }}
+{{- end }}

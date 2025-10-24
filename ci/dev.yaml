@@ -1,0 +1,17 @@
+params:
+  domain: "dev.magefleet.com"
+  email: "francesco@oghabi.it"
+  
+secrets:
+  name: general-secrets
+  credentials:
+    data:
+      VAULT_TOKEN: "hvs.mVNzLm0oHKaMGQokK7c7WrSJ"
+  externalSecrets:
+    enabled: false
+
+
+vault:
+  serviceVault: "http://vault:8200"
+  path: "magefleet"
+

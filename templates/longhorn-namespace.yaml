@@ -1,0 +1,8 @@
+{{- if .Values.longhorn.enabled }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.longhorn.namespaceOverride | default "longhorn-system" }}
+  labels:
+    {{- include "magento.labels" . | nindent 4 }}
+{{- end }}

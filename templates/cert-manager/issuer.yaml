@@ -1,0 +1,17 @@
+{{- if .Values.issuer.enabled }}
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: magento-tls
+  namespace: magento
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: {{ .Values.issuer.email }}
+    privateKeySecretRef:
+      name: magento-tls
+    solvers:
+      - http01:
+          ingress:
+            class: nginx
+{{- end }}
