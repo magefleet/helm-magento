@@ -1,5 +1,3 @@
-
-
 # Magento2 Helm Chart
 
 This is a production ready helm chart for Magento2 and his services.
