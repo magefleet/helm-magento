@@ -1,0 +1,68 @@
+name: Release Charts
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  release:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.14.0
+
+      - name: Add dependency chart repos
+        run: |
+          helm repo add elastic https://helm.elastic.co
+          helm repo add opensearch https://opensearch-project.github.io/helm-charts/
+          helm repo add softonic https://charts.softonic.io
+          helm repo add imgproxy https://helm.imgproxy.net/
+          helm repo add jetstack https://charts.jetstack.io
+          helm repo add external-secrets https://charts.external-secrets.io
+          helm repo add longhorn https://charts.longhorn.io
+          helm repo add magefleet-mariadb https://magefleet.github.io/helm-chart-mariadb/
+          helm repo add magefleet-rabbitmq https://magefleet.github.io/helm-chart-rabbitmq/
+          helm repo add magefleet-redis https://magefleet.github.io/helm-chart-redis/
+
+      - name: Update dependencies
+        run: |
+          helm dependency update
+
+      - name: Package chart
+        run: |
+          mkdir -p .cr-release-packages
+          helm package . -d .cr-release-packages
+
+      - name: Checkout gh-pages
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Update index
+        run: |
+          helm repo index .cr-release-packages --url https://magefleet.github.io/helm-magento/ --merge gh-pages/index.yaml
+
+      - name: Push to gh-pages
+        run: |
+          cp .cr-release-packages/* gh-pages/
+          cd gh-pages
+          git add .
+          git commit -m "Release chart version $(grep '^version:' ../Chart.yaml | awk '{print $2}')" || exit 0
+          git push
