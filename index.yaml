@@ -1,3 +1,361 @@
 apiVersion: v1
-entries: {}
-generated: "2024-10-24T15:00:00Z"
+entries:
+  cert-manager:
+  - annotations:
+      artifacthub.io/license: Apache-2.0
+      artifacthub.io/prerelease: "false"
+      artifacthub.io/signKey: |
+        fingerprint: 1020CF3C033D4F35BAE1C19E1226061C665DF13E
+        url: https://cert-manager.io/public-keys/cert-manager-keyring-2021-09-20-1020CF3C033D4F35BAE1C19E1226061C665DF13E.gpg
+    apiVersion: v1
+    appVersion: v1.14.7
+    created: "2025-10-26T10:05:33.155373312+01:00"
+    description: A Helm chart for cert-manager
+    digest: cc542b089abf8505d77efd3d77ed09e3ea2f7cdf26f3def7e0e897942dfd6943
+    home: https://github.com/cert-manager/cert-manager
+    icon: https://raw.githubusercontent.com/cert-manager/cert-manager/d53c0b9270f8cd90d908460d69502694e1838f5f/logo/logo-small.png
+    keywords:
+    - cert-manager
+    - kube-lego
+    - letsencrypt
+    - tls
+    kubeVersion: '>= 1.22.0-0'
+    maintainers:
+    - email: cert-manager-maintainers@googlegroups.com
+      name: cert-manager-maintainers
+      url: https://cert-manager.io
+    name: cert-manager
+    sources:
+    - https://github.com/cert-manager/cert-manager
+    urls:
+    - https://magefleet.github.io/helm-magento/charts/cert-manager-v1.14.7.tgz
+    version: v1.14.7
+  elasticsearch:
+  - apiVersion: v1
+    appVersion: 7.17.3
+    created: "2025-10-26T10:05:33.157322538+01:00"
+    description: Official Elastic helm chart for Elasticsearch
+    digest: 437a6bd248482b8eb663a1f63bee6c2f9d00c0d77abe90c5a86ca35631969608
+    home: https://github.com/elastic/helm-charts
+    icon: https://helm.elastic.co/icons/elasticsearch.png
+    maintainers:
+    - email: helm-charts@elastic.co
+      name: Elastic
+    name: elasticsearch
+    sources:
+    - https://github.com/elastic/elasticsearch
+    urls:
+    - https://magefleet.github.io/helm-magento/charts/elasticsearch-7.17.3.tgz
+    version: 7.17.3
+  external-secrets:
+  - apiVersion: v2
+    appVersion: v0.15.1
+    created: "2025-10-26T10:05:33.16232399+01:00"
+    dependencies:
+    - condition: bitwarden-sdk-server.enabled
+      name: bitwarden-sdk-server
+      repository: oci://ghcr.io/external-secrets/charts
+      version: v0.3.1
+    description: External secret management for Kubernetes
+    digest: 1504fceaaeb9ea440a54a3589280d42823758e8b984c9f6b15177d32ddf878c8
+    home: https://github.com/external-secrets/external-secrets
+    icon: https://raw.githubusercontent.com/external-secrets/external-secrets/main/assets/eso-logo-large.png
+    keywords:
+    - kubernetes-external-secrets
+    - secrets
+    kubeVersion: '>= 1.19.0-0'
+    maintainers:
+    - email: kellinmcavoy@gmail.com
+      name: mcavoyk
+    name: external-secrets
+    type: application
+    urls:
+    - https://magefleet.github.io/helm-magento/charts/external-secrets-0.15.1.tgz
+    version: 0.15.1
+  imgproxy:
+  - annotations:
+      artifacthub.io/changes: |
+        - kind: added
+          description: Support for the ArtifactHub
+      artifacthub.io/containsSecurityUpdates: "false"
+      artifacthub.io/images: |
+        - name: impgroxy
+          image: darthsim/imgproxy:v3.20.0
+      artifacthub.io/license: MIT-open-group
+      artifacthub.io/links: |
+        - name: imgproxy-helm chart on Github
+          url: https://github.com/imgproxy/imgproxy-helm
+        - name: the source code of imgproxy on Github
+          url: https://github.com/imgproxy/imgproxy
+        - name: the project documentation
+          url: https://imgproxy.net/
+      artifacthub.io/maintainers: |
+        - name: darthsim
+          email: darthsim@evilmartians.com
+        - name: dragonsmith
+          email: agon.smith@gmail.com
+        - name: nepalez
+          email: nepalez@evilmartians.com
+      artifacthub.io/prerelease: "false"
+    apiVersion: v1
+    appVersion: 3.20.0
+    created: "2025-10-26T10:05:33.165309522+01:00"
+    description: A fast and secure standalone server for resizing and converting remote
+      images. The main principles of imgproxy are simplicity, speed, and security.
+    digest: 42106dd9a32aff8c40b516686347ed2160bd228894bf9661b1f0e36fdaf2dc37
+    home: https://github.com/imgproxy/imgproxy
+    icon: https://cdn.rawgit.com/imgproxy/imgproxy/master/logo.svg
+    keywords:
+    - imgproxy
+    - image
+    - processing
+    maintainers:
+    - email: darthsim@evilmartians.com
+      name: darthsim
+    - email: agon.smith@gmail.com
+      name: dragonsmith
+    - email: nepalez@evilmartians.com
+      name: nepalez
+    name: imgproxy
+    sources:
+    - https://github.com/imgproxy/imgproxy
+    urls:
+    - https://magefleet.github.io/helm-magento/charts/imgproxy-0.9.0.tgz
+    version: 0.9.0
+  longhorn:
+  - apiVersion: v1
+    appVersion: v1.10.0
+    created: "2025-10-26T10:05:33.16904931+01:00"
+    description: Longhorn is a distributed block storage system for Kubernetes.
+    digest: 2be9daa3a40db97e91fd6a32aed0a5cbd917bd41f0b00de1e68f0a98e6a3a80b
+    home: https://github.com/longhorn/longhorn
+    icon: https://raw.githubusercontent.com/cncf/artwork/master/projects/longhorn/icon/color/longhorn-icon-color.png
+    keywords:
+    - longhorn
+    - storage
+    - distributed
+    - block
+    - device
+    - iscsi
+    - nfs
+    kubeVersion: '>=1.25.0-0'
+    maintainers:
+    - email: maintainers@longhorn.io
+      name: Longhorn maintainers
+    name: longhorn
+    sources:
+    - https://github.com/longhorn/longhorn
+    - https://github.com/longhorn/longhorn-engine
+    - https://github.com/longhorn/longhorn-instance-manager
+    - https://github.com/longhorn/longhorn-share-manager
+    - https://github.com/longhorn/longhorn-manager
+    - https://github.com/longhorn/longhorn-ui
+    - https://github.com/longhorn/longhorn-tests
+    - https://github.com/longhorn/backing-image-manager
+    urls:
+    - https://magefleet.github.io/helm-magento/charts/longhorn-1.10.0.tgz
+    version: 1.10.0
+  magento:
+  - annotations:
+      artifacthub.io/category: integration-delivery
+      artifacthub.io/changes: |
+        - kind: added
+          description: Longhorn support for persistent storage
+        - kind: added
+          description: CertManager for managing Let's Encrypt certificates
+        - kind: fixed
+          description: Error 503 for ingress controller
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Documentation
+          url: https://github.com/magefleet/helm/blob/main/magento-chart/README.md
+        - name: Magento Official Site
+          url: https://magento.com
+      artifacthub.io/operator: "false"
+      artifacthub.io/recommendations: |
+        - url: https://artifacthub.io/packages/helm/cert-manager/cert-manager
+        - url: https://artifacthub.io/packages/helm/longhorn/longhorn
+      artifacthub.io/screenshots: |
+        - title: Magento 2 Storefront
+          url: https://raw.githubusercontent.com/magento/magento2/2.4-develop/app/design/frontend/Magento/luma/web/images/logo.svg
+    apiVersion: v2
+    appVersion: 2.4.7-p6
+    created: "2025-10-26T10:05:33.152067512+01:00"
+    dependencies:
+    - condition: elasticsearch.enabled
+      name: elasticsearch
+      repository: https://helm.elastic.co
+      version: ~7.17.0
+    - condition: opensearch.enabled
+      name: opensearch
+      repository: https://opensearch-project.github.io/helm-charts/
+      version: ~1.23.0
+    - condition: varnish.enabled
+      name: varnish
+      repository: https://charts.softonic.io
+      version: 0.18.6
+    - condition: imgproxy.enabled
+      name: imgproxy
+      repository: https://helm.imgproxy.net/
+      version: ~0.9.0
+    - condition: cert-manager.enabled
+      name: cert-manager
+      repository: https://charts.jetstack.io
+      version: ~1.14.0
+    - condition: external-secrets.enabled
+      name: external-secrets
+      repository: https://charts.external-secrets.io
+      version: ~0.15.0
+    - condition: longhorn.enabled
+      name: longhorn
+      repository: https://charts.longhorn.io
+      version: ~1.10.0
+    - condition: mariadb.enabled
+      name: mariadb
+      repository: https://magefleet.github.io/helm-chart-mariadb/
+      version: 0.1.1
+    - condition: rabbitmq.enabled
+      name: rabbitmq
+      repository: https://magefleet.github.io/helm-chart-rabbitmq/
+      version: 1.2.0
+    - condition: redis.enabled
+      name: redis
+      repository: https://magefleet.github.io/helm-chart-redis/
+      version: 0.1.0
+    description: Production-ready Helm chart for Magento 2 with services including
+      MariaDB, Elasticsearch/OpenSearch, Redis, RabbitMQ, Varnish, and optional SSL
+      management
+    digest: 4bb7c9a5f394889ce38deef80c556741120a7e57ca8ca9e2996592a30a68d546
+    home: https://github.com/magefleet/helm/magento-chart
+    icon: https://raw.githubusercontent.com/magento/magento2/2.4-develop/lib/web/images/logo.svg
+    keywords:
+    - magento
+    - ecommerce
+    - magento2
+    - e-commerce
+    - commerce
+    - shopping-cart
+    maintainers:
+    - email: info@oghabi.it
+      name: Francesco Oghabi
+      url: https://oghabi.it/
+    name: magento
+    sources:
+    - https://github.com/magefleet/helm
+    - https://github.com/francesco-oghabi/magento2
+    - https://github.com/francesco-oghabi/php-nginx
+    type: application
+    urls:
+    - https://magefleet.github.io/helm-magento/magento-3.0.0.tgz
+    version: 3.0.0
+  mariadb:
+  - apiVersion: v2
+    appVersion: "10.4"
+    created: "2025-10-26T10:05:33.170663316+01:00"
+    description: A Helm chart for MariaDB 10.4
+    digest: 42ffa20018b03896e0786b60ebc4eb39ac4b4899cd496a66ea20608276f20dcb
+    home: https://mariadb.org
+    keywords:
+    - mariadb
+    - mysql
+    - database
+    maintainers:
+    - name: Admin
+    name: mariadb
+    sources:
+    - https://github.com/MariaDB/server
+    type: application
+    urls:
+    - https://magefleet.github.io/helm-magento/charts/mariadb-0.1.1.tgz
+    version: 0.1.1
+  opensearch:
+  - apiVersion: v2
+    appVersion: 1.3.13
+    created: "2025-10-26T10:05:33.172229991+01:00"
+    description: A Helm chart for OpenSearch
+    digest: 4db902f45f2f649a287168c87644b266add0a7463ead6955ae611855ba4795a0
+    home: https://opensearch.org
+    maintainers:
+    - name: DandyDeveloper
+    - name: bbarani
+    - name: gaiksaya
+    - name: peterzhuamazon
+    - name: prudhvigodithi
+    - name: TheAlgo
+    name: opensearch
+    sources:
+    - https://github.com/opensearch-project/opensearch
+    - https://github.com/opensearch-project/helm-charts
+    type: application
+    urls:
+    - https://magefleet.github.io/helm-magento/charts/opensearch-1.23.1.tgz
+    version: 1.23.1
+  rabbitmq:
+  - apiVersion: v2
+    appVersion: 4.1.0
+    created: "2025-10-26T10:05:33.17315031+01:00"
+    description: A Helm chart for RabbitMQ 4.1
+    digest: 7514c510c48c5d79d382fd7102b6456f4680c6a9235694ec04003f99f2e145aa
+    home: https://www.rabbitmq.com
+    keywords:
+    - rabbitmq
+    - message queue
+    - messaging
+    maintainers:
+    - name: rabbitmq
+    name: rabbitmq
+    sources:
+    - https://github.com/rabbitmq/rabbitmq-server
+    type: application
+    urls:
+    - https://magefleet.github.io/helm-magento/charts/rabbitmq-1.2.0.tgz
+    version: 1.2.0
+  redis:
+  - annotations:
+      artifacthub.io/category: database
+      artifacthub.io/changes: |
+        - kind: added
+          description: Initial release with Redis 7.2
+      artifacthub.io/license: Apache-2.0
+      artifacthub.io/links: |
+        - name: Redis Documentation
+          url: https://redis.io/docs
+      artifacthub.io/maintainers: |
+        - name: MageFleet Team
+          email: info@magefleet.com
+    apiVersion: v2
+    appVersion: "7.2"
+    created: "2025-10-26T10:05:33.173857409+01:00"
+    description: A Helm chart for Redis 7.2 with persistence and configurable memory
+      policies
+    digest: 17ed2a2b6823fffcbe3648989b74d2cef0a4a79be4a32bb40d60506f4cd056c6
+    home: https://redis.io
+    icon: https://redis.io/wp-content/uploads/2024/04/Logotype.svg
+    keywords:
+    - redis
+    - cache
+    - database
+    - keyvalue
+    - in-memory
+    maintainers:
+    - email: info@magefleet.com
+      name: MageFleet Team
+    name: redis
+    sources:
+    - https://github.com/redis/redis
+    type: application
+    urls:
+    - https://magefleet.github.io/helm-magento/charts/redis-0.1.0.tgz
+    version: 0.1.0
+  varnish:
+  - apiVersion: v2
+    appVersion: 7.2.1
+    created: "2025-10-26T10:05:33.174582727+01:00"
+    description: A Varnish Cache Helm chart for Kubernetes
+    digest: cd75ddb1d53f6e0397500dd604b09db0e1f0a38f66b602ae617de8ac57424492
+    name: varnish
+    type: application
+    urls:
+    - https://magefleet.github.io/helm-magento/charts/varnish-0.18.6.tgz
+    version: 0.18.6
+generated: "2025-10-26T10:05:33.126416314+01:00"
