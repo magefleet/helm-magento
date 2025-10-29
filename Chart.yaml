@@ -1,7 +1,7 @@
 name: magento
 apiVersion: v2
 appVersion: 2.4.7-p6
-version: 3.1.0
+version: 3.1.1
 description: Production-ready Helm chart for Magento 2 with services including MariaDB, Elasticsearch/OpenSearch, Redis, RabbitMQ, Varnish, and optional SSL management
 type: application
 keywords:
@@ -30,14 +30,10 @@ annotations:
     - name: Magento Official Site
       url: https://magento.com
   artifacthub.io/changes: |
-    - kind: added
-      description: Docker Registry External Secret support for private registries
-    - kind: added
-      description: Longhorn support for persistent storage
-    - kind: added
-      description: CertManager for managing Let's Encrypt certificates
+    - kind: changed
+      description: Added Maintainers section to README with contact information
     - kind: fixed
-      description: Error 503 for ingress controller
+      description: Fixed GitHub Actions workflow to ensure chart packages are published correctly
   artifacthub.io/screenshots: |
     - title: Magento 2 Storefront
       url: https://raw.githubusercontent.com/magento/magento2/2.4-develop/app/design/frontend/Magento/luma/web/images/logo.svg
