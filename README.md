@@ -158,7 +158,7 @@ vault kv put magefleet/docker-registry \
 ```yaml
 global:
   imagePullSecrets:
-    - docker-registry-secret
+    - name: docker-registry-secret
 
 dockerRegistry:
   externalSecret:
