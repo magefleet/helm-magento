@@ -1,7 +1,7 @@
 name: magento
 apiVersion: v2
 appVersion: 2.4.7-p6
-version: 3.1.1
+version: 3.1.2
 description: Production-ready Helm chart for Magento 2 with services including MariaDB, Elasticsearch/OpenSearch, Redis, RabbitMQ, Varnish, and optional SSL management
 type: application
 keywords:
@@ -30,10 +30,8 @@ annotations:
     - name: Magento Official Site
       url: https://magento.com
   artifacthub.io/changes: |
-    - kind: changed
-      description: Added Maintainers section to README with contact information
     - kind: fixed
-      description: Fixed GitHub Actions workflow to ensure chart packages are published correctly
+      description: Fixed GitHub Actions workflow git configuration for gh-pages publishing
   artifacthub.io/screenshots: |
     - title: Magento 2 Storefront
       url: https://raw.githubusercontent.com/magento/magento2/2.4-develop/app/design/frontend/Magento/luma/web/images/logo.svg
