@@ -13,8 +13,14 @@ You can deploy immediatly:
 The project includes best-of-breed charts from Bitnami, Elasticsearch and others to give maximum flexibility for deploying and
 configuring the services.
 
-Actually, due to (Bitnami Bombshell)[https://medium.com/@talkimhi/bitnamis-august-28th-bombshell-the-end-of-free-container-images-as-we-know-them-74fe5cdfb882] we want to 
+Actually, due to (Bitnami Bombshell)[https://medium.com/@talkimhi/bitnamis-august-28th-bombshell-the-end-of-free-container-images-as-we-know-them-74fe5cdfb882] we want to
 switch all Bitnami container to maintained homemage services
+
+## Maintainers
+
+This chart is maintained by [Francesco Oghabi](https://oghabi.it), a DevOps engineer specializing in Kubernetes and Magento deployments.
+
+For questions, issues or contributions, please visit the [GitHub repository](https://github.com/magefleet/helm-magento).
 
 ## Thanks To
 Really Thanks  to phoenix media for their great work. They were the first to provide a Magento2 Helm Chart Open Source.
