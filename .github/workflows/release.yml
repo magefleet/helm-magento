@@ -63,6 +63,8 @@ jobs:
         run: |
           cp .cr-release-packages/* gh-pages/
           cd gh-pages
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
           git add .
           git commit -m "Release chart version $(grep '^version:' ../Chart.yaml | awk '{print $2}')" || true
           git push
