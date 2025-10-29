@@ -64,5 +64,5 @@ jobs:
           cp .cr-release-packages/* gh-pages/
           cd gh-pages
           git add .
-          git commit -m "Release chart version $(grep '^version:' ../Chart.yaml | awk '{print $2}')" || exit 0
+          git commit -m "Release chart version $(grep '^version:' ../Chart.yaml | awk '{print $2}')" || true
           git push
