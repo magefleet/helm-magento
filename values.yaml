@@ -1045,8 +1045,10 @@ vault:
   token: ""  # Set this in production values or via --set
 
 # Cert Manager
+# Note: It's recommended to install cert-manager cluster-wide rather than as a subchart
+# Set to true only if you want to install cert-manager as part of this release
 cert-manager:
-  enabled: true
+  enabled: false
   installCRDs: false  # CRDs are in crds/ directory
   namespace: cert-manager
 
