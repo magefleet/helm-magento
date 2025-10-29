@@ -9,6 +9,26 @@ global:
   ##
   imagePullSecrets: [ ]
 
+# Docker Registry Configuration
+# Used to pull private images from Docker registries
+dockerRegistry:
+  # ExternalSecret configuration for Docker registry credentials
+  externalSecret:
+    # Enable ExternalSecret for Docker registry credentials
+    enabled: false
+    # Name of the ExternalSecret resource
+    name: docker-registry-credentials
+    # Name of the target Kubernetes secret that will be created
+    targetSecretName: docker-registry-secret
+    # SecretStore reference
+    secretStoreName: vault-backend
+    secretStoreKind: ClusterSecretStore
+    # Vault path where Docker registry credentials are stored
+    # Should contain: registry_url, registry_username, registry_password, registry_email
+    vaultPath: magefleet/docker-registry
+    # Refresh interval for the secret
+    refreshInterval: 1h
+
 
 image:
   # registry:

@@ -129,7 +129,65 @@ allows flexible configuration of the preferred secret provider.
 
 The `value.yaml` provides an example configuration for [Hashicorp Vault](https://external-secrets.io/v0.8.1/provider/hashicorp-vault/).
 It also contains an ExternalSecret example for data and templates definition.
-For more information see the ESO [documentation](https://external-secrets.io/v0.8.1/api/components/). 
+For more information see the ESO [documentation](https://external-secrets.io/v0.8.1/api/components/).
+
+## Docker Registry Credentials
+
+For pulling private Docker images, the chart supports automatic management of registry credentials via External Secrets Operator.
+
+### Setup Docker Registry with External Secrets
+
+1. **Store credentials in Vault:**
+
+```bash
+vault kv put magefleet/docker-registry \
+  registry_url="docker.io" \
+  registry_username="your-username" \
+  registry_password="your-password" \
+  registry_email="your-email@example.com"
+```
+
+2. **Enable in values.yaml:**
+
+```yaml
+global:
+  imagePullSecrets:
+    - docker-registry-secret
+
+dockerRegistry:
+  externalSecret:
+    enabled: true
+    name: docker-registry-credentials
+    targetSecretName: docker-registry-secret
+    secretStoreName: vault-backend
+    secretStoreKind: ClusterSecretStore
+    vaultPath: magefleet/docker-registry
+    refreshInterval: 1h
+```
+
+The ExternalSecret will automatically create a Kubernetes secret of type `kubernetes.io/dockerconfigjson` that can be used to pull private images.
+
+### Configuration Parameters
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `dockerRegistry.externalSecret.enabled` | Enable ExternalSecret for Docker registry credentials | `false` |
+| `dockerRegistry.externalSecret.name` | Name of the ExternalSecret resource | `docker-registry-credentials` |
+| `dockerRegistry.externalSecret.targetSecretName` | Name of the Kubernetes secret to create | `docker-registry-secret` |
+| `dockerRegistry.externalSecret.secretStoreName` | Name of the SecretStore/ClusterSecretStore | `vault-backend` |
+| `dockerRegistry.externalSecret.vaultPath` | Vault path where credentials are stored | `magefleet/docker-registry` |
+
+### Verification
+
+After deployment, verify the ExternalSecret is working:
+
+```bash
+# Check ExternalSecret status
+kubectl get externalsecret docker-registry-credentials -n magento
+
+# Verify the secret was created
+kubectl get secret docker-registry-secret -n magento
+``` 
 
 
 ## Persistence
