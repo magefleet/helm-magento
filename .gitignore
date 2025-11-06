@@ -4,3 +4,8 @@
 *Chart.lock
 *deploy.yaml
 certs/
+
+architecture.dot
+magento-k8s-architecture.png
+medium-article.md
+
