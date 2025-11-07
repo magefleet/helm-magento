@@ -90,7 +90,11 @@ Return the proper Docker Image Registry Secret Names
 
   {{- if .Values.global }}
     {{- range .Values.global.imagePullSecrets -}}
-      {{- $pullSecrets = append $pullSecrets . -}}
+      {{- if kindIs "string" . -}}
+        {{- $pullSecrets = append $pullSecrets . -}}
+      {{- else if kindIs "map" . -}}
+        {{- $pullSecrets = append $pullSecrets .name -}}
+      {{- end -}}
     {{- end -}}
   {{- end -}}
 
