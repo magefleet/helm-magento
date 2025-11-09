@@ -1,7 +1,11 @@
 # Magento2 Helm Chart
 
-This is a production ready helm chart for Magento2 and his services.
-You can deploy immediatly:
+[![Version](https://img.shields.io/badge/version-3.2.2-blue.svg)](https://github.com/magefleet/helm/releases)
+[![Magento](https://img.shields.io/badge/Magento-2.4.7--p6-orange.svg)](https://magento.com)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
+This is a production ready helm chart for Magento2 and its services.
+You can deploy immediately:
 - Database (mariadb)
 - Opensearch
 - Redis
@@ -13,14 +17,14 @@ You can deploy immediatly:
 The project includes best-of-breed charts from Bitnami, Elasticsearch and others to give maximum flexibility for deploying and
 configuring the services.
 
-Actually, due to (Bitnami Bombshell)[https://medium.com/@talkimhi/bitnamis-august-28th-bombshell-the-end-of-free-container-images-as-we-know-them-74fe5cdfb882] we want to
-switch all Bitnami container to maintained homemage services
+Actually, due to [Bitnami Bombshell](https://medium.com/@talkimhi/bitnamis-august-28th-bombshell-the-end-of-free-container-images-as-we-know-them-74fe5cdfb882) we want to
+switch all Bitnami containers to maintained homemade services
 
 ## Maintainers
 
 This chart is maintained by [Francesco Oghabi](https://oghabi.it), a DevOps engineer specializing in Kubernetes and Magento deployments.
 
-For questions, issues or contributions, please visit the [GitHub repository](https://github.com/magefleet/helm-magento).
+For questions, issues or contributions, please visit the [GitHub repository](https://github.com/magefleet/helm).
 
 ## Thanks To
 Really Thanks  to phoenix media for their great work. They were the first to provide a Magento2 Helm Chart Open Source.
@@ -265,8 +269,44 @@ for each environment and tune the resource limits and configuration values of th
 
 
 ## Changelog
+
+### [3.2.2] - 2025-11-09
+- **Security**: Vault token no longer hardcoded in values.yaml - uses existingSecret instead
+- **Added**: Support for vault.existingSecret to use external Vault token secret
+- **Changed**: Updated artifacthub-repo.yml with security and prerelease annotations
+
+### [3.2.1] - 2025-11-09
+- **Changed**: Upgraded MariaDB subchart from 0.1.1 to 0.2.0 with External Secrets support
+- **Added**: MariaDB subchart now supports existingSecret for external password management
+
+### [3.2.0] - 2025-11-09
+- **Changed**: External Secrets Operator now deploys to external-secrets-system namespace for better separation
+- **Improved**: Better namespace organization and resource management
+
+### [3.1.5] - 2025-11-07
+- **Fixed**: Fixed imagePullSecrets template to support both string arrays and object arrays format
+- **Fixed**: Prevent ArgoCD from pruning secrets created by External Secrets Operator
+
+### [3.1.4] - 2025-11-06
+- **Added**: Docker registry credentials support via ExternalSecret
+- **Fixed**: Fixed ClusterIssuer namespace issue - removed namespace field from cluster-scoped resource
+- **Changed**: Changed cert-manager default to disabled - recommended to install cluster-wide
+
+### [3.1.3] - 2025-11-05
+- **Fixed**: Docker registry support and cert-manager fixes
+
+### [3.1.2] - 2025-11-04
+- **Fixed**: GitHub Actions workflow improvements
+
+### [3.1.1] - 2025-11-03
+- **Added**: Documentation improvements and workflow fix
+
+### [3.1.0] - 2025-11-02
+- **Added**: Docker Registry External Secret support
+- **Added**: GitHub Actions workflow and Artifact Hub metadata
+
 ### [3.0.0] - 2025-08-29
-- Add longhorn support
-- Add CertManager for managing lets encrypt
-- Fix Error 503 for ingress controller
+- **Added**: Longhorn support for persistent storage
+- **Added**: CertManager for managing Let's Encrypt SSL certificates
+- **Fixed**: Error 503 for ingress controller
 
