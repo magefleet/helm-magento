@@ -1,7 +1,7 @@
 name: magento
 apiVersion: v2
 appVersion: 2.4.7-p6
-version: 3.1.6
+version: 3.2.0
 description: Production-ready Helm chart for Magento 2 with services including MariaDB, Elasticsearch/OpenSearch, Redis, RabbitMQ, Varnish, and optional SSL management
 type: application
 keywords:
@@ -30,6 +30,10 @@ annotations:
     - name: Magento Official Site
       url: https://magento.com
   artifacthub.io/changes: |
+    - kind: added
+      description: MariaDB subchart now supports existingSecret for external password management
+    - kind: changed
+      description: Upgraded MariaDB subchart from 0.1.1 to 0.2.0 with External Secrets support
     - kind: changed
       description: External Secrets Operator now deploys to external-secrets-system namespace for better separation
     - kind: fixed
@@ -79,7 +83,7 @@ dependencies:
     repository: https://charts.longhorn.io
     condition: longhorn.enabled
   - name: mariadb
-    version: 0.1.1
+    version: 0.2.0
     repository: https://magefleet.github.io/helm-chart-mariadb/
     condition: mariadb.enabled
   - name: rabbitmq
