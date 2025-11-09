@@ -159,6 +159,118 @@ entries:
   - annotations:
       artifacthub.io/category: integration-delivery
       artifacthub.io/changes: |
+        - kind: fixed
+          description: Fixed External Secrets webhook issues by deploying to external-secrets-system namespace
+        - kind: changed
+          description: External Secrets Operator now enabled by default and installs CRDs
+        - kind: added
+          description: Added support for vault.existingSecret to use external Vault token secret
+        - kind: security
+          description: Vault token no longer hardcoded in values.yaml - uses existingSecret instead
+        - kind: added
+          description: MariaDB subchart now supports existingSecret for external password management
+        - kind: changed
+          description: Upgraded MariaDB subchart from 0.1.1 to 0.2.0 with External Secrets support
+        - kind: changed
+          description: External Secrets Operator now deploys to external-secrets-system namespace for better separation
+        - kind: fixed
+          description: Fixed imagePullSecrets template to support both string arrays and object arrays format
+        - kind: fixed
+          description: Prevent ArgoCD from pruning secrets created by External Secrets Operator
+        - kind: added
+          description: Added Docker registry credentials support via ExternalSecret
+        - kind: fixed
+          description: Fixed ClusterIssuer namespace issue - removed namespace field from cluster-scoped resource
+        - kind: changed
+          description: Changed cert-manager default to disabled - recommended to install cluster-wide
+      artifacthub.io/containsSecurityUpdates: "false"
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Documentation
+          url: https://github.com/magefleet/helm/blob/main/magento-chart/README.md
+        - name: Magento Official Site
+          url: https://magento.com
+      artifacthub.io/operator: "false"
+      artifacthub.io/prerelease: "false"
+      artifacthub.io/recommendations: |
+        - url: https://artifacthub.io/packages/helm/cert-manager/cert-manager
+        - url: https://artifacthub.io/packages/helm/longhorn/longhorn
+      artifacthub.io/screenshots: |
+        - title: Magento 2 Storefront
+          url: https://raw.githubusercontent.com/magento/magento2/2.4-develop/app/design/frontend/Magento/luma/web/images/logo.svg
+    apiVersion: v2
+    appVersion: 2.4.7-p6
+    created: "2025-11-09T16:27:11.589340516Z"
+    dependencies:
+    - condition: elasticsearch.enabled
+      name: elasticsearch
+      repository: https://helm.elastic.co
+      version: ~7.17.0
+    - condition: opensearch.enabled
+      name: opensearch
+      repository: https://opensearch-project.github.io/helm-charts/
+      version: ~1.23.0
+    - condition: varnish.enabled
+      name: varnish
+      repository: https://charts.softonic.io
+      version: 0.18.6
+    - condition: imgproxy.enabled
+      name: imgproxy
+      repository: https://helm.imgproxy.net/
+      version: ~0.9.0
+    - condition: cert-manager.enabled
+      name: cert-manager
+      repository: https://charts.jetstack.io
+      version: ~1.14.0
+    - condition: external-secrets.enabled
+      name: external-secrets
+      repository: https://charts.external-secrets.io
+      version: ~0.15.0
+    - condition: longhorn.enabled
+      name: longhorn
+      repository: https://charts.longhorn.io
+      version: ~1.10.0
+    - condition: mariadb.enabled
+      name: mariadb
+      repository: https://magefleet.github.io/helm-chart-mariadb/
+      version: 0.2.0
+    - condition: rabbitmq.enabled
+      name: rabbitmq
+      repository: https://magefleet.github.io/helm-chart-rabbitmq/
+      version: 1.2.0
+    - condition: redis.enabled
+      name: redis
+      repository: https://magefleet.github.io/helm-chart-redis/
+      version: 0.1.0
+    description: Production-ready Helm chart for Magento 2 with services including
+      MariaDB, Elasticsearch/OpenSearch, Redis, RabbitMQ, Varnish, and optional SSL
+      management
+    digest: 5aa4daf6fb4f605fe06bbeccf4d7a16ddc28bacb650eecaf4ee6007c0527e27c
+    home: https://github.com/magefleet/helm/magento-chart
+    icon: https://raw.githubusercontent.com/magento/magento2/2.4-develop/lib/web/images/logo.svg
+    keywords:
+    - magento
+    - ecommerce
+    - magento2
+    - e-commerce
+    - commerce
+    - shopping-cart
+    maintainers:
+    - email: info@oghabi.it
+      name: Francesco Oghabi
+      url: https://oghabi.it/
+    name: magento
+    sources:
+    - https://github.com/magefleet/helm
+    - https://github.com/francesco-oghabi/magento2
+    - https://github.com/francesco-oghabi/php-nginx
+    type: application
+    urls:
+    - https://magefleet.github.io/helm-magento/magento-3.2.3.tgz
+    version: 3.2.3
+  - annotations:
+      artifacthub.io/category: integration-delivery
+      artifacthub.io/changes: |
         - kind: added
           description: Added support for vault.existingSecret to use external Vault token secret
         - kind: security
@@ -574,4 +686,4 @@ entries:
     urls:
     - https://magefleet.github.io/helm-magento/charts/varnish-0.18.6.tgz
     version: 0.18.6
-generated: "2025-11-09T15:17:54.972851896Z"
+generated: "2025-11-09T16:27:11.564125942Z"
