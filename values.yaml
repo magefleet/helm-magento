@@ -1054,6 +1054,7 @@ cert-manager:
 
 # External Secrets Operator
 external-secrets:
+  namespaceOverride: "external-secrets-system"
   enabled: true
   installCRDs: false  # CRDs are in crds/ directory
 
