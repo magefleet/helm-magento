@@ -196,7 +196,7 @@ entries:
           url: https://raw.githubusercontent.com/magento/magento2/2.4-develop/app/design/frontend/Magento/luma/web/images/logo.svg
     apiVersion: v2
     appVersion: 2.4.7-p6
-    created: "2025-11-09T15:08:55.830767115Z"
+    created: "2025-11-09T15:17:54.99761204Z"
     dependencies:
     - condition: elasticsearch.enabled
       name: elasticsearch
@@ -241,7 +241,7 @@ entries:
     description: Production-ready Helm chart for Magento 2 with services including
       MariaDB, Elasticsearch/OpenSearch, Redis, RabbitMQ, Varnish, and optional SSL
       management
-    digest: db567f9b200d8f26033685042db88ccb9112d2323548316b800303bed7a4d0f2
+    digest: 8b114420f9dba2a3a59abee9b9a5c6fc539428323c8e247a08ca9e857f21c7c6
     home: https://github.com/magefleet/helm/magento-chart
     icon: https://raw.githubusercontent.com/magento/magento2/2.4-develop/lib/web/images/logo.svg
     keywords:
@@ -574,4 +574,4 @@ entries:
     urls:
     - https://magefleet.github.io/helm-magento/charts/varnish-0.18.6.tgz
     version: 0.18.6
-generated: "2025-11-09T15:08:55.806886778Z"
+generated: "2025-11-09T15:17:54.972851896Z"
