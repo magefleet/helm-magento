@@ -12,6 +12,6 @@ spec:
       namespace: "vault-system"
       auth:
         tokenSecretRef:
-          name: vault-root-token
-          namespace: "vault-system"
-          key: "token"
+          name: {{ .Values.vault.existingSecret | default "vault-root-token" }}
+          namespace: {{ .Values.vault.existingSecretNamespace | default "vault-system" | quote }}
+          key: {{ .Values.vault.existingSecretKey | default "token" | quote }}
