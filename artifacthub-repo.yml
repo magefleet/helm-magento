@@ -1,8 +1,13 @@
 # Artifact Hub repository metadata file
-repositoryID: magefleet-magento
+repositoryID: b348abfe-ec40-4d48-adf1-2dd7ff6d1e21
 name: MageFleet Magento Helm Chart
 displayName: MageFleet Magento
 url: https://magefleet.github.io/helm-magento/
 owners:
   - name: Francesco Oghabi
     email: info@oghabi.it
+  - name: Magefleet
+    email: info@magefleet.com
+ignore:
+  - name: cert-manager
+  - name: varnish
